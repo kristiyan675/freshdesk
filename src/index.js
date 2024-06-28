@@ -1,4 +1,6 @@
 const axios = require("axios");
+const FormData = require("form-data");
+const fs = require("fs");
 const readline = require("readline");
 require("dotenv").config();
 
@@ -34,20 +36,47 @@ const createOrUpdateFreshdeskContact = async (
     const url = `https://${freshdeskSubdomain}.freshdesk.com/api/v2/contacts`;
 
     const form = new FormData();
-    form.append("name", userData.name || userData.login);
-    form.append("email", userData.email || `${userData.login}@github.com`);
-    form.append("twitter_id", userData.twitter_username || "");
-    form.append("unique_external_id", userData.id);
+
+    //  @dev adding Math.random().toFixed(2).toString() because the freshdesk api
+    //  doesn't allow same entry twice even after deleting it from the site's UI
+    form.append(
+      "name",
+      `${userData.login + Math.random().toFixed(2).toString()}` ||
+        userData.login
+    );
+    form.append(
+      "email",
+      userData.email ||
+        `${userData.login + Math.random().toFixed(2).toString()}@github.com`
+    );
+    form.append(
+      "twitter_id",
+      userData.twitter_username + Math.random().toFixed(2).toString() || ""
+    );
+    form.append(
+      "unique_external_id",
+      userData.id + Math.random().toFixed(2).toString()
+    );
 
     if (avatarPath) {
       form.append("avatar", fs.createReadStream(avatarPath));
     } else if (userData.avatar_url) {
       // Download the avatar image
       const response = await axios.get(userData.avatar_url, {
-        responseType: "arraybuffer",
+        responseType: "stream",
       });
-      const buffer = Buffer.from(response.data, "binary");
-      form.append("avatar", buffer, "avatar.jpg");
+      const buffer = [];
+      response.data.on("data", (chunk) => {
+        buffer.push(chunk);
+      });
+      response.data.on("end", () => {
+        const bufferData = Buffer.concat(buffer);
+        form.append("avatar", bufferData, {
+          filename: "avatar.jpg",
+          contentType: response.headers["content-type"],
+        });
+      });
+      await new Promise((resolve) => response.data.on("end", resolve)); // Wait for stream to end
     }
 
     const response = await axios.post(url, form, {
@@ -78,7 +107,7 @@ const main = async () => {
       console.log("GitHub User Data:", userData);
 
       const freshdeskSubdomain = process.env.FRESHDESK_SUBDOMAIN;
-      const freshdeskApiKey = process.env.FRESHDESK_TOKEN;
+      const freshdeskApiKey = process.env.FRESHDESK_API_KEY;
 
       if (freshdeskSubdomain && freshdeskApiKey) {
         const avatarPath = null; // Set to your local avatar path if available
