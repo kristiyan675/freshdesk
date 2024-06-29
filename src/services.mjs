@@ -1,15 +1,8 @@
-const axios = require("axios");
-const FormData = require("form-data");
-const fs = require("fs");
-const readline = require("readline");
-require("dotenv").config();
+import axios from "axios";
+import FormData from "form-data";
+import fs from "fs";
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-const getGithubUser = async (username) => {
+export const getGithubUser = async (username) => {
   try {
     const token = process.env.GITHUB_TOKEN;
     const response = await axios.get(
@@ -20,13 +13,14 @@ const getGithubUser = async (username) => {
         },
       }
     );
+
     return response.data;
   } catch (error) {
     console.error("Error fetching GitHub user:", error.message);
   }
 };
 
-const createOrUpdateFreshdeskContact = async (
+export const createOrUpdateFreshdeskContact = async (
   userData,
   freshdeskSubdomain,
   freshdeskApiKey,
@@ -37,8 +31,8 @@ const createOrUpdateFreshdeskContact = async (
 
     const form = new FormData();
 
-    //  @dev adding Math.random().toFixed(2).toString() because the freshdesk api
-    //  doesn't allow same entry twice even after deleting it from the site's UI
+    //  @dev For demo purposes - adding Math.random().toFixed(2).toString() because the freshdesk api
+    //  doesn't allow same entry twice even after deleting it from the site's UI.
     form.append(
       "name",
       `${userData.login + Math.random().toFixed(2).toString()}` ||
@@ -93,40 +87,3 @@ const createOrUpdateFreshdeskContact = async (
     console.error("Error creating/updating Freshdesk contact:", error.message);
   }
 };
-
-const main = async () => {
-  rl.question("Please enter the GitHub username: ", async (username) => {
-    if (!username) {
-      console.error("GitHub username is required.");
-      rl.close();
-      return;
-    }
-
-    const userData = await getGithubUser(username);
-    if (userData) {
-      console.log("GitHub User Data:", userData);
-
-      const freshdeskSubdomain = process.env.FRESHDESK_SUBDOMAIN;
-      const freshdeskApiKey = process.env.FRESHDESK_API_KEY;
-
-      if (freshdeskSubdomain && freshdeskApiKey) {
-        const avatarPath = null; // Set to your local avatar path if available
-        const freshdeskContact = await createOrUpdateFreshdeskContact(
-          userData,
-          freshdeskSubdomain,
-          freshdeskApiKey,
-          avatarPath
-        );
-        if (freshdeskContact) {
-          console.log("Freshdesk Contact Created/Updated:", freshdeskContact);
-        }
-      } else {
-        console.error("Freshdesk subdomain and API key are required.");
-      }
-    }
-
-    rl.close();
-  });
-};
-
-main();
