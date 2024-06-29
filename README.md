@@ -1,6 +1,6 @@
 # GitHub to Freshdesk Integration
 
-This project integrates the GitHub API and the Freshdesk API to fetch user data from GitHub and create or update contacts in Freshdesk.
+This project integrates the GitHub API and the Freshdesk API to fetch user data from GitHub and create contacts in Freshdesk.
 
 ## Features
 
@@ -16,7 +16,7 @@ This project integrates the GitHub API and the Freshdesk API to fetch user data 
 
 ### 1. Clone the Repository and install depenedencies
 
-    git clone https://github.com/kristianxyz/freshdesk.git
+    git clone https://github.com/kristiyan675/freshdesk.git
     cd freshdesk
 
 ### 2. Install dependencies
@@ -57,3 +57,7 @@ esm,
 chai,  
 mocha,  
 nock
+
+#### Future improvements
+
+Apply all CRUD operations
