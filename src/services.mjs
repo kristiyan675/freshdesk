@@ -13,14 +13,13 @@ export const getGithubUser = async (username) => {
         },
       }
     );
-
     return response.data;
   } catch (error) {
     console.error("Error fetching GitHub user:", error.message);
   }
 };
 
-export const createOrUpdateFreshdeskContact = async (
+export const createFreshdeskContact = async (
   userData,
   freshdeskSubdomain,
   freshdeskApiKey,
@@ -84,6 +83,6 @@ export const createOrUpdateFreshdeskContact = async (
 
     return response.data;
   } catch (error) {
-    console.error("Error creating/updating Freshdesk contact:", error.message);
+    console.error("Error creating Freshdesk contact:", error.message);
   }
 };

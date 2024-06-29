@@ -31,6 +31,8 @@ GITHUB_TOKEN=your_github_token
 
 FRESHDESK_SUBDOMAIN=your_freshdesk_subdomain
 
+!NB: This for testing purposes. The input in the CLI will still be required.
+
 FRESHDESK_API_KEY=your_freshdesk_api_key
 
 ### 4.Usage

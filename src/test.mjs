@@ -1,7 +1,7 @@
 import { describe, it, beforeEach } from "mocha";
 import * as chai from "chai";
 import nock from "nock";
-import { getGithubUser, createOrUpdateFreshdeskContact } from "./services.mjs";
+import { getGithubUser, createFreshdeskContact } from "./services.mjs";
 
 const { expect } = chai;
 
@@ -34,7 +34,7 @@ describe("GitHub to Freshdesk Integration", () => {
     expect(userData).to.deep.equal(mockGithubResponse);
   });
 
-  it("should create/update Freshdesk contact", async () => {
+  it("should create Freshdesk contact", async () => {
     const mockGithubResponse = {
       login: "octocat",
       id: 1,
@@ -59,7 +59,7 @@ describe("GitHub to Freshdesk Integration", () => {
       .reply(201, mockFreshdeskResponse);
 
     const userData = await getGithubUser(githubUsername);
-    const contact = await createOrUpdateFreshdeskContact(
+    const contact = await createFreshdeskContact(
       userData,
       freshdeskSubdomain,
       freshdeskApiKey
